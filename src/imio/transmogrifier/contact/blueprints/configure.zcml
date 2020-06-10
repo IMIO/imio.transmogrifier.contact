@@ -7,4 +7,10 @@
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
+  <utility
+    component=".contact.PlonegroupInternalParent"
+    name="imio.transmogrifier.contact.plonegroupinternalparent"
+    provides="collective.transmogrifier.interfaces.ISectionBlueprint"
+    />
+
 </configure>

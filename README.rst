@@ -9,6 +9,7 @@ imio.transmogrifier.contact
 Propose some blueprints for collective.contact.import export
 
 - imio.transmogrifier.contact.plonegrouporganizationpath : link plonegroup-organization with an input item
+- imio.transmogrifier.contact.plonegroupinternalparent : change _parent when we have an internal plonegroup element
 
 
 Installation
