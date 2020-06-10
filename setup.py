@@ -48,15 +48,8 @@ setup(
     install_requires=[
         'setuptools',
         # -*- Extra requirements: -*-
-        'z3c.jbot',
-        'Products.GenericSetup>=1.8.2',
+        'collective.contact.importexport',
         'plone.api>=1.8.4',
-        'plone.restapi',
-        'plone.app.dexterity',
-        'plone.app.referenceablebehavior',
-        'plone.app.relationfield',
-        'plone.app.lockingbehavior',
-        'plone.schema',
     ],
     extras_require={
         'test': [
@@ -71,7 +64,5 @@ setup(
     entry_points="""
     [z3c.autoinclude.plugin]
     target = plone
-    [console_scripts]
-    update_locale = imio.transmogrifier.contact.locales.update:update_locale
     """,
 )

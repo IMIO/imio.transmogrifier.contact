@@ -11,6 +11,8 @@
   -->
   <!--<includeDependencies package="." />-->
 
+    <include package=".blueprints" />
+
   <!-- -*- extra stuff goes here -*- -->
 
 </configure>
