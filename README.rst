@@ -10,6 +10,7 @@ Propose some blueprints for collective.contact.import export
 
 - imio.transmogrifier.contact.plonegrouporganizationpath : link plonegroup-organization with an input item
 - imio.transmogrifier.contact.plonegroupinternalparent : change _parent when we have an internal plonegroup element
+- imio.transmogrifier.contact.iadocs_userid_updater : set userid field for iadocs internal person
 
 
 Installation

@@ -13,4 +13,10 @@
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
+  <utility
+    component=".iadocs.UseridUpdater"
+    name="imio.transmogrifier.contact.iadocs_userid_updater"
+    provides="collective.transmogrifier.interfaces.ISectionBlueprint"
+    />
+
 </configure>
