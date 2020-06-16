@@ -19,4 +19,10 @@
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
+  <utility
+    component=".iadocs.CreatingGroupUpdater"
+    name="imio.transmogrifier.contact.iadocs_creating_group_updater"
+    provides="collective.transmogrifier.interfaces.ISectionBlueprint"
+    />
+
 </configure>
