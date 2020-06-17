@@ -13,15 +13,20 @@ import os
 
 
 class PlonegroupOrganizationPath(object):
+    """
+        Search input item with plonegroup_org_title value.
+        Update existing plonegroup_org_id object with corresponding item values
+    """
     classProvides(ISectionBlueprint)
     implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
-        self.pgo_title = options.get('title', '').strip().decode('utf8')
+        self.pgo_title = safe_unicode(options.get('plonegroup_org_title', '')).strip()
         self.pgo_id = safe_unicode(options.get('plonegroup_org_id', PLONEGROUP_ORG).strip())
         self.previous = previous
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
         self.directory_path = self.storage['directory_path']
+        self.ids = self.storage['ids']
 
     def __iter__(self):
         for item in self.previous:
@@ -34,6 +39,9 @@ class PlonegroupOrganizationPath(object):
 
 
 class PlonegroupInternalParent(object):
+    """
+        Set _parent key for internal contacts
+    """
     classProvides(ISectionBlueprint)
     implements(ISection)
 

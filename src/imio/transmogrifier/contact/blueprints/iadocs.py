@@ -37,7 +37,7 @@ class UseridUpdater(object):
 
 
 class CreatingGroupUpdater(object):
-    """ Add creating_group key following given title """
+    """ Add creating_group key following given org title """
     classProvides(ISectionBlueprint)
     implements(ISection)
 
