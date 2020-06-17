@@ -12,6 +12,7 @@ from zope.interface import implements
 
 
 class UseridUpdater(object):
+    """ Set userid on internal person """
     classProvides(ISectionBlueprint)
     implements(ISection)
 
@@ -36,6 +37,7 @@ class UseridUpdater(object):
 
 
 class CreatingGroupUpdater(object):
+    """ Add creating_group key following given title """
     classProvides(ISectionBlueprint)
     implements(ISection)
 
