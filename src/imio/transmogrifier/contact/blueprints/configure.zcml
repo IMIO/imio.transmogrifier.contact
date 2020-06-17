@@ -14,14 +14,14 @@
     />
 
   <utility
-    component=".iadocs.UseridUpdater"
-    name="imio.transmogrifier.contact.iadocs_userid_updater"
+    component=".iadocs.UseridInserter"
+    name="imio.transmogrifier.contact.iadocs_userid_inserter"
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
   <utility
-    component=".iadocs.CreatingGroupUpdater"
-    name="imio.transmogrifier.contact.iadocs_creating_group_updater"
+    component=".iadocs.CreatingGroupInserter"
+    name="imio.transmogrifier.contact.iadocs_creating_group_inserter"
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
