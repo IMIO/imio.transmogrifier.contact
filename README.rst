@@ -12,6 +12,7 @@ Propose some blueprints for collective.contact.import export
 - imio.transmogrifier.contact.plonegroupinternalparent : change _parent when we have an internal plonegroup element
 - imio.transmogrifier.contact.iadocs_userid_inserter : set userid field for iadocs internal person
 - imio.transmogrifier.contact.iadocs_creating_group_inserter : set creating_group field on iadocs contacts
+- imio.transmogrifier.contact.iadocs_inbw_subtitle_updater : update title with _service column for inbw customer
 
 
 Installation

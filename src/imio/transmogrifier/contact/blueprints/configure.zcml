@@ -25,4 +25,10 @@
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
+  <utility
+    component=".iadocs.InbwSubtitleUpdater"
+    name="imio.transmogrifier.contact.iadocs_inbw_subtitle_updater"
+    provides="collective.transmogrifier.interfaces.ISectionBlueprint"
+    />
+
 </configure>

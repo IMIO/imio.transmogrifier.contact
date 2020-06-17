@@ -65,3 +65,27 @@ class CreatingGroupInserter(object):
         for item in self.previous:
             item['creating_group'] = self.creating_org
             yield item
+
+
+class InbwSubtitleUpdater(object):
+    """  """
+    classProvides(ISectionBlueprint)
+    implements(ISection)
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.previous = previous
+        self.portal = transmogrifier.context
+        self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
+        self.ids = self.storage['ids']
+        self.fieldnames = self.storage['fieldnames']
+        if not '_service' in self.fieldnames['organization']:
+            raise Exception(u"{}: '_service' field is not defined in fieldnames".format(name))
+
+    def __iter__(self):
+        for item in self.previous:
+            if item['_type'] == 'organization' and item['_service']:
+                if item['_service'].startswith('c/o'):
+                    item['title'] += u' {}'.format(item['_service'])
+                else:
+                    item['title'] += u' ,% {}'.format(item['_service'])
+            yield item
