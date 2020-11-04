@@ -31,8 +31,8 @@ class PlonegroupOrganizationPath(object):
     def __iter__(self):
         for item in self.previous:
             if self.pgo_title and item['_type'] == 'organization' and self.pgo_title == item['title']:
-                item['_path'] = os.path.join(self.directory_path, PLONEGROUP_ORG)
-                self.ids['organization'][item['_id']]['path'] = item['_path']
+                item['_path'] = os.path.join(self.directory_path, self.pgo_id)
+                self.ids['organization'][item['_set']][item['_id']]['path'] = item['_path']
                 item['_act'] = 'update'
                 item['use_parent_address'] = False
             yield item
