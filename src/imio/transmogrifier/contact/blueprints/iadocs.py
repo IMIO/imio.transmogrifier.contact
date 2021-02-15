@@ -68,7 +68,7 @@ class CreatingGroupInserter(object):
 
 
 class InbwSubtitleUpdater(object):
-    """  """
+    """Updates title field with _service field value."""
     classProvides(ISectionBlueprint)
     implements(ISection)
 
@@ -78,7 +78,7 @@ class InbwSubtitleUpdater(object):
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
         self.ids = self.storage['ids']
         self.fieldnames = self.storage['fieldnames']
-        if not '_service' in self.fieldnames['organization']:
+        if '_service' not in self.fieldnames['organization']:
             raise Exception(u"{}: '_service' field is not defined in fieldnames".format(name))
 
     def __iter__(self):

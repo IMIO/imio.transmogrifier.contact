@@ -13,9 +13,12 @@ import os
 
 
 class PlonegroupOrganizationPath(object):
-    """
-        Search input item with plonegroup_org_title value.
-        Update existing plonegroup_org_id object with corresponding item values
+    """Searches input item with plonegroup_org_title value and updates existing plonegroup_org_id object
+    with corresponding item values.
+
+    Parameters:
+        * plonegroup_org_title = M, organization title to search.
+        * plonegroup_org_id = O, plonegroup organization id. Default: plonegroup-organization.
     """
     classProvides(ISectionBlueprint)
     implements(ISection)
@@ -39,8 +42,12 @@ class PlonegroupOrganizationPath(object):
 
 
 class PlonegroupInternalParent(object):
-    """
-        Set _parent key for internal contacts
+    """Sets _parent key of internal contacts to store items at the right place.
+
+    Parameters:
+        * internal_field = O, internal field name. Default: _ic.
+        * plonegroup_org_id = O, plonegroup organization id. Default: plonegroup-organization.
+        * plonegroup_pers_id = O, plonegroup personnel folder id. Default: personnel-folder.
     """
     classProvides(ISectionBlueprint)
     implements(ISection)
