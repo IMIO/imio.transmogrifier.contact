@@ -12,7 +12,7 @@ from zope.interface import implements
 
 
 class UseridInserter(object):
-    """ Set userid on internal person """
+    """Adds userid key on internal person with internal_number column value."""
     classProvides(ISectionBlueprint)
     implements(ISection)
 
@@ -37,7 +37,11 @@ class UseridInserter(object):
 
 
 class CreatingGroupInserter(object):
-    """ Add creating_group key following given org title """
+    """Adds creating_group key following given org title.
+
+    Parameters:
+        * creating_group = M, creating group title value set for imported contacts.
+    """
     classProvides(ISectionBlueprint)
     implements(ISection)
 
