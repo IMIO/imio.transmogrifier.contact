@@ -50,9 +50,9 @@ class CreatingGroupInserter(object):
         self.portal = transmogrifier.context
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
         self.ids = self.storage['ids']
-        creating_group = safe_unicode(transmogrifier['config'].get('creating_group', '').strip())
+        creating_group = safe_unicode(options.get('creating_group', '').strip())
         if not creating_group:
-            raise Exception(u'{}: You have to set creating_group value in config section !'.format(name))
+            raise Exception(u'{}: You have to set creating_group value in this section !'.format(name))
         reg = api.portal.get_registry_record('imio.dms.mail.browser.settings.IImioDmsMailConfig.contact_group_encoder')
         if not reg:
             raise Exception(u'{}: You have to activate the contact creating group option in iadocs config'.format(name))
