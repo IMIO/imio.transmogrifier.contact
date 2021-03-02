@@ -105,7 +105,7 @@ class InbwMerger(object):
     """Replaces a contact with another one. "_merger column" is used to indicate the replacing internal number.
 
     Parameters:
-    * raise = O, raise Exception if a problematic error happens. Default = 1.
+        * raise = O, raise Exception if a problematic error happens. Default = 1.
     """
     classProvides(ISectionBlueprint)
     implements(ISection)
