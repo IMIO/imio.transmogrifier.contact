@@ -7,8 +7,6 @@ from collective.transmogrifier.interfaces import ISectionBlueprint
 from imio.transmogrifier.contact.utils import replace_relation
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
-from z3c.relationfield import RelationValue
-from z3c.relationfield.event import updateRelations
 from zc.relation.interfaces import ICatalog
 from zope.annotation.interfaces import IAnnotations
 from zope.component import queryUtility
@@ -123,7 +121,7 @@ class InbwMerger(object):
             raise Exception(u"{}: '_merger' field is not defined in fieldnames".format(name))
         self.must_raise = bool(options.get('raise', '0'))
 
-    def __iter__(self):
+    def __iter__(self):  # noqa
         for item in self.previous:
             if item['_merger']:
                 # checking current contact
