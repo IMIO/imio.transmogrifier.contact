@@ -31,4 +31,10 @@
     provides="collective.transmogrifier.interfaces.ISectionBlueprint"
     />
 
+  <utility
+    component=".iadocs.InbwMerger"
+    name="imio.transmogrifier.contact.iadocs_inbw_merger"
+    provides="collective.transmogrifier.interfaces.ISectionBlueprint"
+    />
+
 </configure>

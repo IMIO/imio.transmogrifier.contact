@@ -13,7 +13,8 @@ Propose some blueprints for collective.contact.import export
 - imio.transmogrifier.contact.iadocs_userid_inserter : set userid field for iadocs internal person
 - imio.transmogrifier.contact.iadocs_creating_group_inserter : set creating_group field on iadocs contacts
 - imio.transmogrifier.contact.iadocs_inbw_subtitle_updater : update title with _service column for inbw customer
-
+- imio.transmogrifier.contact.iadocs_inbw_merger : replace contact with _merger column containing
+  replacing internal number
 
 Installation
 ------------
