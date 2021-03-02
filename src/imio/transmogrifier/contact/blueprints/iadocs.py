@@ -16,7 +16,11 @@ from zope.intid import IIntIds
 
 
 class UseridInserter(object):
-    """Adds userid key on internal person with internal_number column value."""
+    """Adds userid key on internal person with internal_number column value.
+
+    Parameters:
+        * raise_on_error = O, raises exception if 1. Default 1. Can be set to 0.
+    """
     classProvides(ISectionBlueprint)
     implements(ISection)
 
@@ -25,6 +29,7 @@ class UseridInserter(object):
         self.portal = transmogrifier.context
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
         self.ids = self.storage['ids']
+        self.roe = bool(int(options.get('raise_on_error', '1')))
 
     def __iter__(self):
         for item in self.previous:
@@ -32,6 +37,8 @@ class UseridInserter(object):
                 # for internal person, internal_number contains plone username
                 if not api.user.get(username=item['internal_number']):
                     input_error(item, "username '{}' not found".format(item['internal_number']))
+                    if self.roe:
+                        raise Exception(u'User not found ! See log...')
                 else:
                     # we define the specific field
                     item['userid'] = item['internal_number']
@@ -103,7 +110,7 @@ class InbwMerger(object):
     """Replaces a contact with another one. "_merger column" is used to indicate the replacing internal number.
 
     Parameters:
-        * raise = O, raise Exception if a problematic error happens. Default = 1.
+        * raise_on_error = O, raises exception if 1. Default 1. Can be set to 0.
     """
     classProvides(ISectionBlueprint)
     implements(ISection)
@@ -119,7 +126,7 @@ class InbwMerger(object):
         self.ids = self.storage['ids']
         if '_merger' not in self.fieldnames['organization']:
             raise Exception(u"{}: '_merger' field is not defined in fieldnames".format(name))
-        self.must_raise = bool(options.get('raise', '0'))
+        self.roe = bool(int(options.get('raise_on_error', '1')))
 
     def __iter__(self):  # noqa
         for item in self.previous:
@@ -132,7 +139,7 @@ class InbwMerger(object):
                 current_iid = self.intids.queryId(current_obj)
                 if current_iid is None:
                     input_error(item, u"cannot find current object intid: {}".format(current_obj))
-                    if self.must_raise:
+                    if self.roe:
                         raise Exception("Cannot find current object intid '{}'".format(current_obj))
 
                 # searching replacement object
@@ -141,19 +148,22 @@ class InbwMerger(object):
                 if len(brains) > 1:
                     input_error(item, u"the search with 'internal_number'='{}' gets multiple objs: {}".format(
                         item['_merger'], u', '.join([b.getPath() for b in brains])))
-                    if self.must_raise:
+                    if self.roe:
                         raise Exception("Find multiple objects with internal number '{}'".format(item['_merger']))
+                    continue
                 elif not brains:
                     input_error(item, u"the search with 'internal_number'='{}' doesn't "
                                       u"get any result".format(item['_merger']))
-                    if self.must_raise:
+                    if self.roe:
                         raise Exception("Cannot find object with internal number '{}'".format(item['_merger']))
+                    continue
                 repl_obj = brains[0].getObject()
                 repl_iid = self.intids.getId(repl_obj)
                 if repl_iid is None:
                     input_error(item, u"cannot find replacement object intid: {}".format(repl_obj))
-                    if self.must_raise:
+                    if self.roe:
                         raise Exception("Cannot find replacement object intid '{}'".format(repl_obj))
+                    continue
 
                 # getting relations pointing to current object
                 rels = list(self.rel_catalog.findRelations({'to_id': current_iid}))
@@ -172,19 +182,13 @@ class InbwMerger(object):
                         replace_relation(item, self.portal, self.catalog, rel,
                                          path='from_path', field='contacts', repl_iid=repl_iid)
                     else:
-                        input_error(item, u"relation type not handled! pt '{}', field '{}'".format(
+                        raise Exception("Relation type not handled! pt '{}', field '{}'".format(
                             rel.from_object.portal_type, rel.from_attribute))
-                        if self.must_raise:
-                            raise Exception("Relation type not handled! pt '{}', field '{}'".format(
-                                rel.from_object.portal_type, rel.from_attribute))
                 # getting relations pointing to current object
                 rels = list(self.rel_catalog.findRelations({'from_id': current_iid}))
                 if rels:
-                    input_error(item, u"relation from_id not handled! to paths '{}'".format(
+                    raise Exception(u"relation from_id not handled! to paths '{}'".format(
                         ', '.join([rel.to_path for rel in rels])))
-                    if self.must_raise:
-                        raise Exception(u"relation from_id not handled! to paths '{}'".format(
-                            ', '.join([rel.to_path for rel in rels])))
                 # deleting current obj
                 api.content.delete(obj=current_obj)
                 item['_act'] = 'delete'
