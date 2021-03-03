@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from collective.contact.importexport.blueprints.main import ANNOTATION_KEY
-from collective.contact.importexport.utils import input_error
+from collective.contact.importexport.utils import log_error
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from imio.transmogrifier.contact.utils import replace_relation
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
-from zc.relation.interfaces import ICatalog
+from zc.relation.interfaces import ICatalog  # noqa
 from zope.annotation.interfaces import IAnnotations
 from zope.component import queryUtility
 from zope.interface import classProvides
@@ -36,7 +36,7 @@ class UseridInserter(object):
             if item['_type'] == 'person' and item['_ic'] and item['internal_number']:
                 # for internal person, internal_number contains plone username
                 if not api.user.get(username=item['internal_number']):
-                    input_error(item, "username '{}' not found".format(item['internal_number']))
+                    log_error(item, "username '{}' not found".format(item['internal_number']), level='critical')
                     if self.roe:
                         raise Exception(u'User not found ! See log...')
                 else:
@@ -134,11 +134,11 @@ class InbwMerger(object):
                 # checking current contact
                 current_obj = self.portal.unrestrictedTraverse(item['_path'], default=None)
                 if current_obj is None:
-                    input_error(item, "Cannot find main object with path '{}' and act '{}'".format(item['_path'],
-                                                                                                   item['_act']))
+                    log_error(item, "Cannot find main object with path '{}' and act '{}'".format(item['_path'],
+                              item['_act']), level='critical')
                 current_iid = self.intids.queryId(current_obj)
                 if current_iid is None:
-                    input_error(item, u"cannot find current object intid: {}".format(current_obj))
+                    log_error(item, u"cannot find current object intid: {}".format(current_obj), level='critical')
                     if self.roe:
                         raise Exception("Cannot find current object intid '{}'".format(current_obj))
 
@@ -146,21 +146,21 @@ class InbwMerger(object):
                 brains = self.catalog.unrestrictedSearchResults({'portal_type': item['_type'],
                                                                  'internal_number': item['_merger']})
                 if len(brains) > 1:
-                    input_error(item, u"the search with 'internal_number'='{}' gets multiple objs: {}".format(
-                        item['_merger'], u', '.join([b.getPath() for b in brains])))
+                    log_error(item, u"the search with 'internal_number'='{}' gets multiple objs: {}".format(
+                        item['_merger'], u', '.join([b.getPath() for b in brains])), level='critical')
                     if self.roe:
                         raise Exception("Find multiple objects with internal number '{}'".format(item['_merger']))
                     continue
                 elif not brains:
-                    input_error(item, u"the search with 'internal_number'='{}' doesn't "
-                                      u"get any result".format(item['_merger']))
+                    log_error(item, u"the search with 'internal_number'='{}' doesn't "
+                                    u"get any result".format(item['_merger']), level='critical')
                     if self.roe:
                         raise Exception("Cannot find object with internal number '{}'".format(item['_merger']))
                     continue
                 repl_obj = brains[0].getObject()
                 repl_iid = self.intids.getId(repl_obj)
                 if repl_iid is None:
-                    input_error(item, u"cannot find replacement object intid: {}".format(repl_obj))
+                    log_error(item, u"cannot find replacement object intid: {}".format(repl_obj), level='critical')
                     if self.roe:
                         raise Exception("Cannot find replacement object intid '{}'".format(repl_obj))
                     continue

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collective.contact.importexport.utils import input_error
+from collective.contact.importexport.utils import log_error
 from z3c.relationfield import RelationValue
 from zope.lifecycleevent import modified
 
@@ -8,7 +8,7 @@ from zope.lifecycleevent import modified
 def replace_relation(item, portal, catalog, rel, path='from_path', field='', repl_iid=None):
     obj = portal.unrestrictedTraverse(getattr(rel, path), default=None)
     if obj is None:
-        input_error(item, u"cannot find linked object: {}".format(rel.from_path))
+        log_error(item, u"cannot find linked object: {}".format(rel.from_path))
         catalog.unindex(rel)  # remove bad relation...
         return
 
