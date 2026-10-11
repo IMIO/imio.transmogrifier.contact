@@ -3,4 +3,4 @@
 from zope.i18nmessageid import MessageFactory
 
 
-_ = MessageFactory('imio.transmogrifier.contact')
+_ = MessageFactory("imio.transmogrifier.contact")

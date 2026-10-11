@@ -21,7 +21,7 @@ import unittest
 
 
 # imio.dms.mail types having contact relations (InbwMerger), imio.dms.mail isn't a dependency
-MAIL_TYPES = ('dmsincomingmail', 'dmsincoming_email', 'dmsoutgoingmail', 'contact_list')
+MAIL_TYPES = ("dmsincomingmail", "dmsincoming_email", "dmsoutgoingmail", "contact_list")
 
 
 class IMail(model.Schema):
@@ -43,19 +43,21 @@ class ImioTransmogrifierContactLayer(PloneSandboxLayer):
         self.loadZCML(package=imio.transmogrifier.contact)
 
     def setUpPloneSite(self, portal):
-        setLocal('request', portal.REQUEST)  # for collective.fingerpointing
-        setRoles(portal, TEST_USER_ID, ['Manager'])
-        applyProfile(portal, 'collective.contact.core:test_data')  # creates mydirectory
-        applyProfile(portal, 'collective.behavior.internalnumber:default')  # internal_number index
+        setLocal("request", portal.REQUEST)  # for collective.fingerpointing
+        setRoles(portal, TEST_USER_ID, ["Manager"])
+        applyProfile(portal, "collective.contact.core:test_data")  # creates mydirectory
+        applyProfile(portal, "collective.behavior.internalnumber:default")  # internal_number index
         for portal_type in MAIL_TYPES:
-            portal.portal_types._setObject(portal_type, DexterityFTI(
-                portal_type, schema='imio.transmogrifier.contact.testing.IMail'))
+            portal.portal_types._setObject(
+                portal_type, DexterityFTI(portal_type, schema="imio.transmogrifier.contact.testing.IMail")
+            )
 
 
 IMIO_TRANSMOGRIFIER_CONTACT_FIXTURE = ImioTransmogrifierContactLayer()
 
 IMIO_TRANSMOGRIFIER_CONTACT_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(IMIO_TRANSMOGRIFIER_CONTACT_FIXTURE,), name='ImioTransmogrifierContactLayer:IntegrationTesting')
+    bases=(IMIO_TRANSMOGRIFIER_CONTACT_FIXTURE,), name="ImioTransmogrifierContactLayer:IntegrationTesting"
+)
 
 
 class BaseTestCase(unittest.TestCase):
@@ -64,22 +66,24 @@ class BaseTestCase(unittest.TestCase):
     layer = IMIO_TRANSMOGRIFIER_CONTACT_INTEGRATION_TESTING
 
     def setUp(self):
-        self.portal = self.layer['portal']
-        setRoles(self.portal, TEST_USER_ID, ['Manager'])
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
         self.transmogrifier = Transmogrifier(self.portal)
         # storage filled by the importexport main section
-        self.storage = {'directory_path': 'mydirectory',
-                        'ids': {'organization': {'set1': {}}, 'person': {'set1': {}}, 'held_position': {'set1': {}}},
-                        'fieldnames': {'organization': [], 'person': [], 'held_position': []}}
+        self.storage = {
+            "directory_path": "mydirectory",
+            "ids": {"organization": {"set1": {}}, "person": {"set1": {}}, "held_position": {"set1": {}}},
+            "fieldnames": {"organization": [], "person": [], "held_position": []},
+        }
         IAnnotations(self.transmogrifier)[ANNOTATION_KEY] = self.storage
 
     def section(self, blueprint, items=(), **options):
-        return blueprint(self.transmogrifier, 'section', options, iter(items))
+        return blueprint(self.transmogrifier, "section", options, iter(items))
 
     @staticmethod
     def item(_type, **values):
         """A csv line as read by the importexport main section."""
-        return dict({'_set': 'set1', '_id': '1', '_ln': 2, '_type': _type}, **values)
+        return dict({"_set": "set1", "_id": "1", "_ln": 2, "_type": _type}, **values)
 
     def error(self, func, *args, **kwargs):
         """Returns the message of the exception raised by func."""
