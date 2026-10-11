@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from collective.contact.importexport.blueprints.main import ANNOTATION_KEY
 from collective.contact.plonegroup.config import PLONEGROUP_ORG
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.interfaces import ISectionBlueprint
-from Products.CMFPlone.utils import safe_unicode
+from plone.base.utils import safe_text
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implementer
 from zope.interface import provider
@@ -14,7 +12,7 @@ import os
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class PlonegroupOrganizationPath(object):
+class PlonegroupOrganizationPath:
     """Searches input item with plonegroup_org_title value and updates existing plonegroup_org_id object
     with corresponding item values.
 
@@ -24,8 +22,8 @@ class PlonegroupOrganizationPath(object):
     """
 
     def __init__(self, transmogrifier, name, options, previous):
-        self.pgo_title = safe_unicode(options.get("plonegroup_org_title", "")).strip()
-        self.pgo_id = safe_unicode(options.get("plonegroup_org_id", PLONEGROUP_ORG).strip())
+        self.pgo_title = safe_text(options.get("plonegroup_org_title", "")).strip()
+        self.pgo_id = safe_text(options.get("plonegroup_org_id", PLONEGROUP_ORG).strip())
         self.previous = previous
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
         self.directory_path = self.storage["directory_path"]
@@ -43,7 +41,7 @@ class PlonegroupOrganizationPath(object):
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class PlonegroupInternalParent(object):
+class PlonegroupInternalParent:
     """Sets _parent key of internal contacts to store items at the right place.
 
     Parameters:
@@ -53,9 +51,9 @@ class PlonegroupInternalParent(object):
     """
 
     def __init__(self, transmogrifier, name, options, previous):
-        self.internal_fld = safe_unicode(options.get("internal_field", "_ic").strip())
-        self.pgo_id = safe_unicode(options.get("plonegroup_org_id", PLONEGROUP_ORG).strip())
-        self.pgp_id = safe_unicode(options.get("plonegroup_pers_id", "personnel-folder").strip())
+        self.internal_fld = safe_text(options.get("internal_field", "_ic").strip())
+        self.pgo_id = safe_text(options.get("plonegroup_org_id", PLONEGROUP_ORG).strip())
+        self.pgp_id = safe_text(options.get("plonegroup_pers_id", "personnel-folder").strip())
         self.previous = previous
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
         self.directory_path = self.storage["directory_path"]

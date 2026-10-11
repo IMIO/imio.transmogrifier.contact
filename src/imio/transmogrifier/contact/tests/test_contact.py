@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from collective.contact.plonegroup.config import PLONEGROUP_ORG
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from imio.transmogrifier.contact.blueprints.contact import PlonegroupInternalParent
@@ -14,27 +13,27 @@ class TestPlonegroupOrganizationPath(BaseTestCase):
             PlonegroupOrganizationPath,
         )
         section = self.section(PlonegroupOrganizationPath)
-        self.assertEqual((section.pgo_title, section.pgo_id), (u"", PLONEGROUP_ORG))
+        self.assertEqual((section.pgo_title, section.pgo_id), ("", PLONEGROUP_ORG))
         self.assertEqual(section.directory_path, "mydirectory")
         self.assertIs(section.ids, self.storage["ids"])
         section = self.section(
             PlonegroupOrganizationPath, plonegroup_org_title=" Mon CPAS ", plonegroup_org_id=" cpas "
         )
-        self.assertEqual((section.pgo_title, section.pgo_id), (u"Mon CPAS", u"cpas"))
+        self.assertEqual((section.pgo_title, section.pgo_id), ("Mon CPAS", "cpas"))
 
     def test___iter__(self):
         self.storage["ids"]["organization"]["set1"]["1"] = {"path": "mydirectory/1"}
         items = [
-            self.item("organization", title=u"Mon CPAS"),
-            self.item("organization", _id="2", title=u"Autre"),
-            self.item("person", lastname=u"Mon CPAS"),
+            self.item("organization", title="Mon CPAS"),
+            self.item("organization", _id="2", title="Autre"),
+            self.item("person", lastname="Mon CPAS"),
         ]
         items = list(self.section(PlonegroupOrganizationPath, items, plonegroup_org_title="Mon CPAS"))
         self.assertEqual(
             items[0],
             self.item(
                 "organization",
-                title=u"Mon CPAS",
+                title="Mon CPAS",
                 _act="update",
                 use_parent_address=False,
                 _path="mydirectory/plonegroup-organization",
@@ -44,11 +43,11 @@ class TestPlonegroupOrganizationPath(BaseTestCase):
             self.storage["ids"]["organization"]["set1"]["1"], {"path": "mydirectory/plonegroup-organization"}
         )
         self.assertEqual(
-            items[1:], [self.item("organization", _id="2", title=u"Autre"), self.item("person", lastname=u"Mon CPAS")]
+            items[1:], [self.item("organization", _id="2", title="Autre"), self.item("person", lastname="Mon CPAS")]
         )
         # no title option: nothing changed
-        items = list(self.section(PlonegroupOrganizationPath, [self.item("organization", title=u"")]))
-        self.assertEqual(items, [self.item("organization", title=u"")])
+        items = list(self.section(PlonegroupOrganizationPath, [self.item("organization", title="")]))
+        self.assertEqual(items, [self.item("organization", title="")])
 
 
 class TestPlonegroupInternalParent(BaseTestCase):
@@ -59,13 +58,13 @@ class TestPlonegroupInternalParent(BaseTestCase):
         )
         section = self.section(PlonegroupInternalParent)
         self.assertEqual(
-            (section.internal_fld, section.pgo_id, section.pgp_id), (u"_ic", PLONEGROUP_ORG, u"personnel-folder")
+            (section.internal_fld, section.pgo_id, section.pgp_id), ("_ic", PLONEGROUP_ORG, "personnel-folder")
         )
         self.assertEqual(section.directory_path, "mydirectory")
         section = self.section(
             PlonegroupInternalParent, internal_field=" _int ", plonegroup_org_id=" org ", plonegroup_pers_id=" pers "
         )
-        self.assertEqual((section.internal_fld, section.pgo_id, section.pgp_id), (u"_int", u"org", u"pers"))
+        self.assertEqual((section.internal_fld, section.pgo_id, section.pgp_id), ("_int", "org", "pers"))
 
     def test___iter__(self):
         items = [

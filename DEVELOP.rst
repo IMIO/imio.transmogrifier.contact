@@ -1,19 +1,15 @@
 Using the development buildout
 ==============================
 
-Create a virtualenv in the package::
+Create the Plone 6.2 environment (pyenv with Python 3.13 and virtualenv required)::
 
-    $ virtualenv --clear .
-
-Install requirements with pip::
-
-    $ ./bin/pip install -r requirements.txt
+    $ make setup plone=6.2
 
 Run buildout::
 
-    $ ./bin/buildout
+    $ make buildout
 
-Start Plone in foreground:
+Start Plone in foreground::
 
     $ ./bin/instance fg
 
@@ -21,22 +17,8 @@ Start Plone in foreground:
 Running tests
 -------------
 
-    $ tox
+    $ make test
 
-list all tox environments:
+Code analysis::
 
-    $ tox -l
-    py27-Plone43
-    py27-Plone51
-    py27-Plone52
-    py37-Plone52
-    build_instance
-    code-analysis
-    lint-py27
-    lint-py37
-    coverage-report
-
-run a specific tox env:
-
-    $ tox -e py37-Plone52
-
+    $ ./bin/code-analysis

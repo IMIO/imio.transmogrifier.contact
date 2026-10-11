@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from collective.contact.importexport.blueprints.main import ANNOTATION_KEY
 from collective.transmogrifier.transmogrifier import Transmogrifier
 from plone.app.testing import applyProfile
@@ -17,6 +16,7 @@ import collective.behavior.internalnumber
 import collective.contact.core
 import collective.transmogrifier
 import imio.transmogrifier.contact
+import transaction
 import unittest
 
 
@@ -51,6 +51,8 @@ class ImioTransmogrifierContactLayer(PloneSandboxLayer):
             portal.portal_types._setObject(
                 portal_type, DexterityFTI(portal_type, schema="imio.transmogrifier.contact.testing.IMail")
             )
+        # flush the indexing queue while the site is set (held_position Title needs intids)
+        transaction.commit()
 
 
 IMIO_TRANSMOGRIFIER_CONTACT_FIXTURE = ImioTransmogrifierContactLayer()

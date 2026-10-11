@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from collective.contact.importexport import e_logger
 from imio.transmogrifier.contact.testing import BaseTestCase
 from imio.transmogrifier.contact.utils import replace_relation
@@ -69,5 +68,5 @@ class TestUtils(BaseTestCase):
         # Plone 4 bug: the logged path is always from_path
         self.assertEqual(
             [record.getMessage() for record in handler.buffer],
-            [u"set1: O, ln 2, cannot find linked object: /plone/om"] * 2,
+            ["set1: O, ln 2, cannot find linked object: /plone/om"] * 2,
         )

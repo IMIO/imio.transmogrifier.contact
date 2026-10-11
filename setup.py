@@ -16,7 +16,7 @@ long_description = "\n\n".join(
 
 setup(
     name="imio.transmogrifier.contact",
-    version="1.0a2.dev0",
+    version="2.0.0.dev0",
     description="blueprints for collective.contact.importexport",
     long_description=long_description,
     # Get more from https://pypi.org/classifiers/
@@ -24,9 +24,13 @@ setup(
         "Environment :: Web Environment",
         "Framework :: Plone",
         "Framework :: Plone :: Addon",
-        "Framework :: Plone :: 4.3",
+        "Framework :: Plone :: 6.2",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     ],
@@ -42,15 +46,18 @@ setup(
     },
     license="GPL version 2",
     packages=find_packages("src", exclude=["ez_setup"]),
-    namespace_packages=["imio", "imio.transmogrifier"],
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
+    python_requires=">=3.10",
     install_requires=[
         "setuptools",
         # -*- Extra requirements: -*-
         "collective.contact.importexport",
+        "collective.contact.plonegroup",
+        "collective.transmogrifier",
         "plone.api>=1.8.4",
+        "plone.base",
     ],
     extras_require={
         "test": [
@@ -61,8 +68,6 @@ setup(
             "plone.testing>=5.0.0",
             "plone.app.robotframework[debug]",
             "collective.behavior.internalnumber",
-            # imported by blueprints/contact.py but missing from install_requires (phase 4)
-            "collective.contact.plonegroup",
         ],
     },
     entry_points="""
