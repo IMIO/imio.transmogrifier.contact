@@ -58,6 +58,9 @@ setup(
             # plone_coredev tests as of 2016-04-01.
             'plone.testing>=5.0.0',
             'plone.app.robotframework[debug]',
+            'collective.behavior.internalnumber',
+            # imported by blueprints/contact.py but missing from install_requires (phase 4)
+            'collective.contact.plonegroup',
         ],
     },
     entry_points="""
