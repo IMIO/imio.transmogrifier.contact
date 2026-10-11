@@ -6,12 +6,14 @@ from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from Products.CMFPlone.utils import safe_unicode
 from zope.annotation.interfaces import IAnnotations
-from zope.interface import classProvides
-from zope.interface import implements
+from zope.interface import implementer
+from zope.interface import provider
 
 import os
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class PlonegroupOrganizationPath(object):
     """Searches input item with plonegroup_org_title value and updates existing plonegroup_org_id object
     with corresponding item values.
@@ -20,8 +22,6 @@ class PlonegroupOrganizationPath(object):
         * plonegroup_org_title = M, organization title to search.
         * plonegroup_org_id = O, plonegroup organization id. Default: plonegroup-organization.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.pgo_title = safe_unicode(options.get('plonegroup_org_title', '')).strip()
@@ -41,6 +41,8 @@ class PlonegroupOrganizationPath(object):
             yield item
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class PlonegroupInternalParent(object):
     """Sets _parent key of internal contacts to store items at the right place.
 
@@ -49,8 +51,6 @@ class PlonegroupInternalParent(object):
         * plonegroup_org_id = O, plonegroup organization id. Default: plonegroup-organization.
         * plonegroup_pers_id = O, plonegroup personnel folder id. Default: personnel-folder.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.internal_fld = safe_unicode(options.get('internal_field', '_ic').strip())

@@ -10,19 +10,19 @@ from Products.CMFPlone.utils import safe_unicode
 from zc.relation.interfaces import ICatalog  # noqa
 from zope.annotation.interfaces import IAnnotations
 from zope.component import queryUtility
-from zope.interface import classProvides
-from zope.interface import implements
+from zope.interface import implementer
+from zope.interface import provider
 from zope.intid import IIntIds
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class UseridInserter(object):
     """Adds userid key on internal person with internal_number column value.
 
     Parameters:
         * raise_on_error = O, raises exception if 1. Default 1. Can be set to 0.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
@@ -47,14 +47,14 @@ class UseridInserter(object):
             yield item
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class CreatingGroupInserter(object):
     """Adds creating_group key following given org title.
 
     Parameters:
         * creating_group = M, creating group title value set for imported contacts.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
@@ -82,10 +82,10 @@ class CreatingGroupInserter(object):
             yield item
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class InbwSubtitleUpdater(object):
     """Updates title field with _service field value."""
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
@@ -106,14 +106,14 @@ class InbwSubtitleUpdater(object):
             yield item
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class InbwMerger(object):
     """Replaces a contact with another one. "_merger column" is used to indicate the replacing internal number.
 
     Parameters:
         * raise_on_error = O, raises exception if 1. Default 1. Can be set to 0.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
