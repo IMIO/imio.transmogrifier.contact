@@ -1,119 +1,119 @@
-# -*- coding: utf-8 -*-
-
 from collective.contact.importexport.blueprints.main import ANNOTATION_KEY
 from collective.contact.importexport.utils import log_error
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from imio.transmogrifier.contact.utils import replace_relation
 from plone import api
-from Products.CMFPlone.utils import safe_unicode
+from plone.base.utils import safe_text
 from zc.relation.interfaces import ICatalog  # noqa
 from zope.annotation.interfaces import IAnnotations
 from zope.component import queryUtility
-from zope.interface import classProvides
-from zope.interface import implements
+from zope.interface import implementer
+from zope.interface import provider
 from zope.intid import IIntIds
 
 
-class UseridInserter(object):
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class UseridInserter:
     """Adds userid key on internal person with internal_number column value.
 
     Parameters:
         * raise_on_error = O, raises exception if 1. Default 1. Can be set to 0.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
         self.portal = transmogrifier.context
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
-        self.ids = self.storage['ids']
-        self.roe = bool(int(options.get('raise_on_error', '1')))
+        self.ids = self.storage["ids"]
+        self.roe = bool(int(options.get("raise_on_error", "1")))
 
     def __iter__(self):
         for item in self.previous:
-            if item['_type'] == 'person' and item['_ic'] and item['internal_number']:
+            if item["_type"] == "person" and item["_ic"] and item["internal_number"]:
                 # for internal person, internal_number contains plone username
-                if not api.user.get(username=item['internal_number']):
-                    log_error(item, "username '{}' not found".format(item['internal_number']), level='critical')
+                if not api.user.get(username=item["internal_number"]):
+                    log_error(item, "username '{}' not found".format(item["internal_number"]), level="critical")
                     if self.roe:
-                        raise Exception(u'User not found ! See log...')
+                        raise Exception("User not found ! See log...")
                 else:
                     # we define the specific field
-                    item['userid'] = item['internal_number']
-                item['internal_number'] = None
+                    item["userid"] = item["internal_number"]
+                item["internal_number"] = None
 
             yield item
 
 
-class CreatingGroupInserter(object):
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class CreatingGroupInserter:
     """Adds creating_group key following given org title.
 
     Parameters:
         * creating_group = M, creating group title value set for imported contacts.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
         self.portal = transmogrifier.context
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
-        self.ids = self.storage['ids']
-        creating_group = safe_unicode(options.get('creating_group', '').strip())
+        self.ids = self.storage["ids"]
+        creating_group = safe_text(options.get("creating_group", "").strip())
         if not creating_group:
-            raise Exception(u'{}: You have to set creating_group value in this section !'.format(name))
-        reg = api.portal.get_registry_record('imio.dms.mail.browser.settings.IImioDmsMailConfig.contact_group_encoder')
+            raise Exception(f"{name}: You have to set creating_group value in this section !")
+        reg = api.portal.get_registry_record("imio.dms.mail.browser.settings.IImioDmsMailConfig.contact_group_encoder")
         if not reg:
-            raise Exception(u'{}: You have to activate the contact creating group option in iadocs config'.format(name))
+            raise Exception(f"{name}: You have to activate the contact creating group option in iadocs config")
         # get imio.dms.mail.ActiveCreatingGroupVocabulary
         from imio.dms.mail.vocabularies import ActiveCreatingGroupVocabulary
+
         voc = ActiveCreatingGroupVocabulary()(self.portal)
         creating_groups = {term.title: term.value for term in voc}
         if creating_group not in creating_groups:
-            raise Exception(u"{}: given creating_group '{}' isn't an active creating group organization".format(
-                            name, creating_group))
+            raise Exception(
+                "{}: given creating_group '{}' isn't an active creating group organization".format(name, creating_group)
+            )
         self.creating_org = creating_groups[creating_group]
 
     def __iter__(self):
         for item in self.previous:
-            item['creating_group'] = self.creating_org
+            item["creating_group"] = self.creating_org
             yield item
 
 
-class InbwSubtitleUpdater(object):
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class InbwSubtitleUpdater:
     """Updates title field with _service field value."""
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
         self.portal = transmogrifier.context
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
-        self.ids = self.storage['ids']
-        self.fieldnames = self.storage['fieldnames']
-        if '_service' not in self.fieldnames['organization']:
-            raise Exception(u"{}: '_service' field is not defined in fieldnames".format(name))
+        self.ids = self.storage["ids"]
+        self.fieldnames = self.storage["fieldnames"]
+        if "_service" not in self.fieldnames["organization"]:
+            raise Exception(f"{name}: '_service' field is not defined in fieldnames")
 
     def __iter__(self):
         for item in self.previous:
-            if item['_type'] == 'organization' and item['_service']:
-                if item['_service'].startswith('c/o'):
-                    item['title'] += u' {}'.format(item['_service'])
+            if item["_type"] == "organization" and item["_service"]:
+                if item["_service"].startswith("c/o"):
+                    item["title"] += " {}".format(item["_service"])
                 else:
-                    item['title'] += u' ,% {}'.format(item['_service'])
+                    item["title"] += " ,% {}".format(item["_service"])
             yield item
 
 
-class InbwMerger(object):
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class InbwMerger:
     """Replaces a contact with another one. "_merger column" is used to indicate the replacing internal number.
 
     Parameters:
         * raise_on_error = O, raises exception if 1. Default 1. Can be set to 0.
     """
-    classProvides(ISectionBlueprint)
-    implements(ISection)
 
     def __init__(self, transmogrifier, name, options, previous):
         self.previous = previous
@@ -122,76 +122,104 @@ class InbwMerger(object):
         self.rel_catalog = queryUtility(ICatalog)
         self.intids = queryUtility(IIntIds)
         self.storage = IAnnotations(transmogrifier).get(ANNOTATION_KEY)
-        self.fieldnames = self.storage['fieldnames']
-        self.ids = self.storage['ids']
-        if '_merger' not in self.fieldnames['organization']:
-            raise Exception(u"{}: '_merger' field is not defined in fieldnames".format(name))
-        self.roe = bool(int(options.get('raise_on_error', '1')))
+        self.fieldnames = self.storage["fieldnames"]
+        self.ids = self.storage["ids"]
+        if "_merger" not in self.fieldnames["organization"]:
+            raise Exception(f"{name}: '_merger' field is not defined in fieldnames")
+        self.roe = bool(int(options.get("raise_on_error", "1")))
 
     def __iter__(self):  # noqa
         for item in self.previous:
-            if item['_merger']:
+            if item["_merger"]:
                 # checking current contact
-                current_obj = self.portal.unrestrictedTraverse(item['_path'], default=None)
+                current_obj = self.portal.unrestrictedTraverse(item["_path"], default=None)
                 if current_obj is None:
-                    log_error(item, "Cannot find main object with path '{}' and act '{}'".format(item['_path'],
-                              item['_act']), level='critical')
+                    log_error(
+                        item,
+                        "Cannot find main object with path '{}' and act '{}'".format(item["_path"], item["_act"]),
+                        level="critical",
+                    )
                 current_iid = self.intids.queryId(current_obj)
                 if current_iid is None:
-                    log_error(item, u"cannot find current object intid: {}".format(current_obj), level='critical')
+                    log_error(item, f"cannot find current object intid: {current_obj}", level="critical")
                     if self.roe:
-                        raise Exception("Cannot find current object intid '{}'".format(current_obj))
+                        raise Exception(f"Cannot find current object intid '{current_obj}'")
 
                 # searching replacement object
-                brains = self.catalog.unrestrictedSearchResults({'portal_type': item['_type'],
-                                                                 'internal_number': item['_merger']})
+                brains = self.catalog.unrestrictedSearchResults(
+                    {"portal_type": item["_type"], "internal_number": item["_merger"]}
+                )
                 if len(brains) > 1:
-                    log_error(item, u"the search with 'internal_number'='{}' gets multiple objs: {}".format(
-                        item['_merger'], u', '.join([b.getPath() for b in brains])), level='critical')
+                    log_error(
+                        item,
+                        "the search with 'internal_number'='{}' gets multiple objs: {}".format(
+                            item["_merger"], ", ".join([b.getPath() for b in brains])
+                        ),
+                        level="critical",
+                    )
                     if self.roe:
-                        raise Exception("Find multiple objects with internal number '{}'".format(item['_merger']))
+                        raise Exception("Find multiple objects with internal number '{}'".format(item["_merger"]))
                     continue
                 elif not brains:
-                    log_error(item, u"the search with 'internal_number'='{}' doesn't "
-                                    u"get any result".format(item['_merger']), level='critical')
+                    log_error(
+                        item,
+                        "the search with 'internal_number'='{}' doesn't get any result".format(item["_merger"]),
+                        level="critical",
+                    )
                     if self.roe:
-                        raise Exception("Cannot find object with internal number '{}'".format(item['_merger']))
+                        raise Exception("Cannot find object with internal number '{}'".format(item["_merger"]))
                     continue
                 repl_obj = brains[0].getObject()
                 repl_iid = self.intids.getId(repl_obj)
                 if repl_iid is None:
-                    log_error(item, u"cannot find replacement object intid: {}".format(repl_obj), level='critical')
+                    log_error(item, f"cannot find replacement object intid: {repl_obj}", level="critical")
                     if self.roe:
-                        raise Exception("Cannot find replacement object intid '{}'".format(repl_obj))
+                        raise Exception(f"Cannot find replacement object intid '{repl_obj}'")
                     continue
 
                 # getting relations pointing to current object
-                rels = list(self.rel_catalog.findRelations({'to_id': current_iid}))
+                rels = list(self.rel_catalog.findRelations({"to_id": current_iid}))
                 for rel in rels:
-                    if rel.from_object.portal_type in ('dmsincomingmail', 'dmsincoming_email') and \
-                            rel.from_attribute == 'sender':
-                        replace_relation(item, self.portal, self.catalog, rel,
-                                         path='from_path', field='sender', repl_iid=repl_iid)
-                    elif rel.from_object.portal_type == 'dmsoutgoingmail' and rel.from_attribute == 'recipients':
-                        replace_relation(item, self.portal, self.catalog, rel,
-                                         path='from_path', field='recipients', repl_iid=repl_iid)
-                    elif rel.from_object.portal_type == 'held_position' and rel.from_attribute == 'position':
-                        replace_relation(item, self.portal, self.catalog, rel,
-                                         path='from_path', field='position', repl_iid=repl_iid)
-                    elif rel.from_object.portal_type == 'contact_list' and rel.from_attribute == 'contacts':
-                        replace_relation(item, self.portal, self.catalog, rel,
-                                         path='from_path', field='contacts', repl_iid=repl_iid)
+                    if (
+                        rel.from_object.portal_type in ("dmsincomingmail", "dmsincoming_email")
+                        and rel.from_attribute == "sender"
+                    ):
+                        replace_relation(
+                            item, self.portal, self.catalog, rel, path="from_path", field="sender", repl_iid=repl_iid
+                        )
+                    elif rel.from_object.portal_type == "dmsoutgoingmail" and rel.from_attribute == "recipients":
+                        replace_relation(
+                            item,
+                            self.portal,
+                            self.catalog,
+                            rel,
+                            path="from_path",
+                            field="recipients",
+                            repl_iid=repl_iid,
+                        )
+                    elif rel.from_object.portal_type == "held_position" and rel.from_attribute == "position":
+                        replace_relation(
+                            item, self.portal, self.catalog, rel, path="from_path", field="position", repl_iid=repl_iid
+                        )
+                    elif rel.from_object.portal_type == "contact_list" and rel.from_attribute == "contacts":
+                        replace_relation(
+                            item, self.portal, self.catalog, rel, path="from_path", field="contacts", repl_iid=repl_iid
+                        )
                     else:
-                        raise Exception("Relation type not handled! pt '{}', field '{}'".format(
-                            rel.from_object.portal_type, rel.from_attribute))
+                        raise Exception(
+                            "Relation type not handled! pt '{}', field '{}'".format(
+                                rel.from_object.portal_type, rel.from_attribute
+                            )
+                        )
                 # getting relations pointing to current object
-                rels = list(self.rel_catalog.findRelations({'from_id': current_iid}))
+                rels = list(self.rel_catalog.findRelations({"from_id": current_iid}))
                 if rels:
-                    raise Exception(u"relation from_id not handled! to paths '{}'".format(
-                        ', '.join([rel.to_path for rel in rels])))
+                    raise Exception(
+                        "relation from_id not handled! to paths '{}'".format(", ".join([rel.to_path for rel in rels]))
+                    )
                 # deleting current obj
                 api.content.delete(obj=current_obj)
-                item['_act'] = 'delete'
+                item["_act"] = "delete"
                 # cleaning item
-                item['_del_path'] = item.pop('_path')  # we remove the path so all others sections are skipped
+                item["_del_path"] = item.pop("_path")  # we remove the path so all others sections are skipped
             yield item
