@@ -1,6 +1,6 @@
 [report]
 include =
-    src/imio/*
+    src/imio/transmogrifier/contact/*
 omit =
     */test*
     */upgrades/*
